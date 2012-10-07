@@ -51,7 +51,6 @@ public class SinglyServiceImpl
 
     Map<String, String> qparams = new LinkedHashMap<String, String>();
     qparams.put("client_id", clientId);
-    qparams.put("client_secret", clientSecret);
     qparams.put("redirect_uri", redirectUrl);
     qparams.put("service", service);
 
