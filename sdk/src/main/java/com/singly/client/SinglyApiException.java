@@ -1,5 +1,8 @@
 package com.singly.client;
 
+/**
+ * A RuntimeException implementation for errors making calls to the Singly API.
+ */
 public class SinglyApiException
   extends RuntimeException {
 

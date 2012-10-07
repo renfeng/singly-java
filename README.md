@@ -16,6 +16,29 @@ The library code is contained in the SinglySDK project in the sdk folder.  The c
 
 Sample implementations are contained in the SinglySpringExample project in the spring-mvc-example folder.  This is a spring webapp that demonstrates the usage of authentication with the Singly api and retrieving social data.
 
+## Runing the Spring MVC Example application
+
+1. Go to https://singly.com and register or login.
+2. Create a new Singly application or use the default application.  This is your Singly oauth application.
+3. Get the client id and client secret for your application.
+4. For the Spring MVC example, set your client id and client secret in the /WEB-INF/conf/webapp-context.xml configuration for the SinglyService.
+5. Startup the Spring MVC example using the mvn jetty:run command in the root of the application.  You will need to have Maven 2 installed.  This starts a local web server running the example application.
+6. Point your browser to http://localhost:8080/singly.html to use the application.
+
+## Using the Singly Java SDK
+
+The Singly Java SDK is under the sdk folder and is arranged as a Maven project.  To use the SDK in your application you can add th dependency to your Maven repository, then add the maven dependency to your project as follows, specifying the version.
+
+    <dependency>
+      <groupId>com.singly</groupId>
+      <artifactId>singly-sdk</artifactId>
+      <version>x.x.x</version>
+    </dependency>
+
+If not using Maven for your application, you will still need to use Maven or Eclipse to build the SDK jar which can then be included into your project.
+
+The com.singly.client.SinglyServiceImpl is the main client class you will use within your application to authenticate and make API calls.  Please see the JavaDocs for that class for a complete description of authentication flow and API usage.
+
 Support
 --------------
 
