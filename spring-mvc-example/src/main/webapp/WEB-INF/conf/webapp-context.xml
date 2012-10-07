@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:aop="http://www.springframework.org/schema/aop"
+     xmlns:tx="http://www.springframework.org/schema/tx"
+     xmlns:context="http://www.springframework.org/schema/context"  
+     xmlns:mvc="http://www.springframework.org/schema/mvc"       
+     xmlns:util="http://www.springframework.org/schema/util"
+     xsi:schemaLocation="
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+     http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+
+  <!-- Scan the core packages for annotations -->
+  <context:component-scan base-package="com.singly" />
+  <context:property-placeholder />  
+  
+  <!-- Transactions through annotations -->
+  <tx:annotation-driven />
+  
+  <!-- MVC configuration through annotations -->
+  <mvc:annotation-driven />
+  <mvc:default-servlet-handler />
+  
+  <bean id="jspViewResolver"
+    class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+    <property name="prefix" value="/WEB-INF/pages/" />
+    <property name="suffix" value=".jsp" />
+    <property name="order" value="3" />
+  </bean>
+
+  <!-- Multipart resolver for file uploading -->
+  <bean id="multipartResolver"
+    class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    <property name="maxUploadSize" value="-1" />
+  </bean>
+  
+  <!-- Singly SDK Configuraion -->
+  <bean id="singlyHttpClient" class="com.singly.util.HttpClientServiceImpl" 
+      init-method="initialize" destroy-method="shutdown" />
+  <bean id="singlyService" class="com.singly.client.SinglyServiceImpl">
+    <property name="clientId" value="your_singly_client_id" />
+    <property name="clientSecret" value="your_singly_client_secret" />
+    <property name="httpClientService" ref="singlyHttpClient" />
+  </bean>
+                   
+</beans>
