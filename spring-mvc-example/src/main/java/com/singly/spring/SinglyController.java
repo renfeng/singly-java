@@ -18,7 +18,7 @@ import com.singly.client.SinglyService;
  * authentication and retrieve social data.
  */
 @Controller
-@RequestMapping("/singly.html")
+@RequestMapping({ "/", "/index.html"})
 public class SinglyController {
 
   @Autowired
@@ -44,7 +44,7 @@ public class SinglyController {
       // if so then redirect to the service authentication URL
       return "redirect:"
         + singlyService.getAuthenticationUrl(service,
-          "http://localhost:8080/singly.html");
+          "http://localhost:8080/index.html");
     }
     else if (StringUtils.isNotBlank(authCode)) {
       
