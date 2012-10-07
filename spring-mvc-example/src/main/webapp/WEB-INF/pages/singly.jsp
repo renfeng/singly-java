@@ -4,7 +4,7 @@
 <head></head>
 <body>
   <h2>Processing</h2>
-  <c:if test="${authCompleted}">You Just Completed An Authentication</c:if>
+  <c:if test="${completedAuth}">You Just Completed An Authentication</c:if>
   <p>${profilesJSON}</p>
   
   <h2>Services</h2>

@@ -10,6 +10,17 @@ import com.singly.util.HttpClientService;
 import com.singly.util.JsonUtils;
 import com.singly.util.SinglyUtils;
 
+/**
+ * A standard {@link SinglyService} implementation that handles authentication
+ * and API calls to the Singly API.
+ * 
+ * This class by default uses a {@link InMemorySinglyAccountStorage} class for
+ * the {@link SinglyAccountStorage}.  Developers will need to create their own
+ * SinglyAccountStorage implementation and override the default as access tokens
+ * are not persisted beyond the lifetime of the application.
+ * 
+ * @see SinglyAccountStorage
+ */
 public class SinglyServiceImpl
   implements SinglyService {
 
@@ -95,15 +106,17 @@ public class SinglyServiceImpl
       throw new SinglyApiException("No access token found");
     }
 
+    // create the API endpoint url
     Map<String, String> params = new LinkedHashMap<String, String>();
     params.put("access_token", accessToken);
     if (queryParams != null) {
       params.putAll(queryParams);
     }
-    String postApiCallUrl = SinglyUtils.createSinglyURL(apiEndpoint);
+    String getApiCallUrl = SinglyUtils.createSinglyURL(apiEndpoint);
 
+    // create the API endpoint url
     try {
-      byte[] response = httpClientService.get(postApiCallUrl, params);
+      byte[] response = httpClientService.get(getApiCallUrl, params);
       return new String(response);
     }
     catch (HttpException e) {
@@ -122,6 +135,7 @@ public class SinglyServiceImpl
       throw new SinglyApiException("No access token found");
     }
 
+    // create the API endpoint url
     Map<String, String> params = new LinkedHashMap<String, String>();
     params.put("access_token", accessToken);
     if (queryParams != null) {
@@ -129,6 +143,7 @@ public class SinglyServiceImpl
     }
     String postApiCallUrl = SinglyUtils.createSinglyURL(apiEndpoint);
 
+    // perform the API call and return the response
     try {
       byte[] response = httpClientService.post(postApiCallUrl, params);
       return new String(response);
@@ -149,6 +164,7 @@ public class SinglyServiceImpl
       throw new SinglyApiException("No access token found");
     }
 
+    // create the API endpoint url
     Map<String, String> params = new LinkedHashMap<String, String>();
     params.put("access_token", accessToken);
     if (queryParams != null) {
@@ -156,6 +172,7 @@ public class SinglyServiceImpl
     }
     String postApiCallUrl = SinglyUtils.createSinglyURL(apiEndpoint);
 
+    // perform the API call and return the response
     try {
       byte[] response = httpClientService.postAsBody(postApiCallUrl, body,
         mime, charset);
