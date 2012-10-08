@@ -39,6 +39,12 @@ If not using Maven for your application, you will still need to use Maven or Ecl
 
 The com.singly.client.SinglyServiceImpl is the main client class you will use within your application to authenticate and make API calls.  Please see the JavaDocs for that class for a complete description of authentication flow and API usage.
 
+## Android SDK
+
+If you are building an Android app, it is better to use the Singly SDK for Android.
+
+https://github.com/Singly/singly-android
+
 Support
 --------------
 
