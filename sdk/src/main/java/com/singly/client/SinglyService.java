@@ -43,13 +43,21 @@ public interface SinglyService {
    * The first step of the authentication process, returns the URL to which the
    * user is to be redirected for authentication with a given service.
    * 
+   * Some services require extra parameters such as scope and flag to be passed
+   * in.  Use the authExtra input to pass in the parameters by name.
+   * 
    * @param service The service to authenticate against.
    * @param redirectUrl The URL handled by the application to which we are 
    * redirected upon successful authentication.
+   * @param scope Optional scope passed to the service.  Used by some services
+   * to allow for extra permissions.
+   * @param authExtra Any optional extra parameters used in oauth of services.
+   * This includes scope and flag parameters.
    * 
    * @return The URL to redirect the user to for service authentication.
    */
-  public String getAuthenticationUrl(String service, String redirectUrl);
+  public String getAuthenticationUrl(String service, String redirectUrl,
+    Map<String, String> authExtra);
 
   /**
    * Completes the authentication process, getting and storing the Singly access
@@ -67,6 +75,9 @@ public interface SinglyService {
   /**
    * Makes a GET call to the Singly API.
    * 
+   * If an API call requires an access token it must be added to the queryParams
+   * passed into the method.
+   * 
    * @param account The account we are making the API call for.
    * @param apiEndpoint The Singly API endpoint to call.
    * @param queryParams Any query parameters for the endpoint.
@@ -82,6 +93,9 @@ public interface SinglyService {
 
   /**
    * Makes a POST call to the Singly API.
+   * 
+   * If an API call requires an access token it must be added to the queryParams
+   * passed into the method.
    * 
    * @param account The account we are making the API call for.
    * @param apiEndpoint The Singly API endpoint to call.
@@ -99,6 +113,9 @@ public interface SinglyService {
   /**
    * Makes a POST call to the Singly API passing in the body of the request. 
    * This is useful when doing sharing or proxying through the Singly API.
+   * 
+   * If an API call requires an access token it must be added to the queryParams
+   * passed into the method.
    * 
    * @param account The account we are making the API call for.
    * @param apiEndpoint The Singly API endpoint to call.
