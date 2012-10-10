@@ -13,20 +13,13 @@ import com.singly.util.SinglyUtils;
 /**
  * A standard {@link SinglyService} implementation that handles authentication
  * and API calls to the Singly API.
- * 
- * This class by default uses a {@link InMemorySinglyAccountStorage} class for
- * the {@link SinglyAccountStorage}.  Developers will need to create their own
- * SinglyAccountStorage implementation and override the default as access tokens
- * are not persisted beyond the lifetime of the application.
- * 
- * @see SinglyAccountStorage
  */
 public class SinglyServiceImpl
   implements SinglyService {
 
   private String clientId;
   private String clientSecret;
-  private SinglyAccountStorage accountStorage = new InMemorySinglyAccountStorage();
+  private SinglyAccountStorage accountStorage;
   private HttpClientService httpClientService;
 
   public SinglyServiceImpl() {
@@ -47,12 +40,23 @@ public class SinglyServiceImpl
   }
 
   @Override
-  public String getAuthenticationUrl(String service, String redirectUrl) {
+  public String getAuthenticationUrl(String service, String redirectUrl,
+    Map<String, String> authExtra) {
 
     Map<String, String> qparams = new LinkedHashMap<String, String>();
     qparams.put("client_id", clientId);
     qparams.put("redirect_uri", redirectUrl);
     qparams.put("service", service);
+
+    // add in scope and flag parameters if present
+    if (authExtra != null) {
+      if (authExtra.containsKey("scope")) {
+        qparams.put("scope", authExtra.get("scope"));
+      }
+      if (authExtra.containsKey("flag")) {
+        qparams.put("flag", authExtra.get("flag"));
+      }
+    }
 
     // create the authentication url
     return SinglyUtils.createSinglyURL("/oauth/authorize", qparams);
@@ -99,23 +103,12 @@ public class SinglyServiceImpl
     Map<String, String> queryParams)
     throws SinglyApiException {
 
-    // fail if no access token
-    String accessToken = accountStorage.getAccessToken(account);
-    if (accessToken == null) {
-      throw new SinglyApiException("No access token found");
-    }
-
     // create the API endpoint url
-    Map<String, String> params = new LinkedHashMap<String, String>();
-    params.put("access_token", accessToken);
-    if (queryParams != null) {
-      params.putAll(queryParams);
-    }
     String getApiCallUrl = SinglyUtils.createSinglyURL(apiEndpoint);
 
     // create the API endpoint url
     try {
-      byte[] response = httpClientService.get(getApiCallUrl, params);
+      byte[] response = httpClientService.get(getApiCallUrl, queryParams);
       return new String(response);
     }
     catch (HttpException e) {
@@ -128,23 +121,12 @@ public class SinglyServiceImpl
     Map<String, String> queryParams)
     throws SinglyApiException {
 
-    // fail if no access token
-    String accessToken = accountStorage.getAccessToken(account);
-    if (accessToken == null) {
-      throw new SinglyApiException("No access token found");
-    }
-
     // create the API endpoint url
-    Map<String, String> params = new LinkedHashMap<String, String>();
-    params.put("access_token", accessToken);
-    if (queryParams != null) {
-      params.putAll(queryParams);
-    }
     String postApiCallUrl = SinglyUtils.createSinglyURL(apiEndpoint);
 
     // perform the API call and return the response
     try {
-      byte[] response = httpClientService.post(postApiCallUrl, params);
+      byte[] response = httpClientService.post(postApiCallUrl, queryParams);
       return new String(response);
     }
     catch (HttpException e) {
@@ -157,19 +139,9 @@ public class SinglyServiceImpl
     Map<String, String> queryParams, byte[] body, String mime, String charset)
     throws SinglyApiException {
 
-    // fail if no access token
-    String accessToken = accountStorage.getAccessToken(account);
-    if (accessToken == null) {
-      throw new SinglyApiException("No access token found");
-    }
-
     // create the API endpoint url
-    Map<String, String> params = new LinkedHashMap<String, String>();
-    params.put("access_token", accessToken);
-    if (queryParams != null) {
-      params.putAll(queryParams);
-    }
-    String postApiCallUrl = SinglyUtils.createSinglyURL(apiEndpoint);
+    String postApiCallUrl = SinglyUtils.createSinglyURL(apiEndpoint,
+      queryParams);
 
     // perform the API call and return the response
     try {
