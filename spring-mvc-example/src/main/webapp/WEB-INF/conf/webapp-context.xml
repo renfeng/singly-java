@@ -43,7 +43,7 @@
   <bean id="singlyHttpClient" class="com.singly.util.HttpClientServiceImpl" 
       init-method="initialize" destroy-method="shutdown" />
   
-  <bean id="accountStorage" class="com.singly.client.InMemoryAccountStorage" />  
+  <bean id="accountStorage" class="com.singly.client.InMemorySinglyAccountStorage" />  
   
   <bean id="singlyService" class="com.singly.client.SinglyServiceImpl">
     <property name="clientId" value="your_singly_client_id" />

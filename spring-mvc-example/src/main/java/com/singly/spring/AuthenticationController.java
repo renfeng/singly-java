@@ -1,12 +1,16 @@
 package com.singly.spring;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.singly.client.SinglyAccountStorage;
 import com.singly.client.SinglyService;
+import com.singly.util.JSONUtils;
 
 /**
  * Example Controller class that shows usage of the SinglyService to do service
@@ -25,7 +30,7 @@ import com.singly.client.SinglyService;
 @RequestMapping({
   "/", "/index.html"
 })
-public class SinglyController {
+public class AuthenticationController {
 
   @Autowired
   private SinglyService singlyService;
@@ -62,6 +67,10 @@ public class SinglyController {
       model.addAttribute("completedAuth", authenticated);
     }
 
+    // make an API call to get profiles data and add the JSON to the model
+    String servicesJson = singlyService.doGetApiRequest(account, "/services",
+      null);
+
     // if the user is authenticated
     if (authenticated) {
 
@@ -70,11 +79,19 @@ public class SinglyController {
       queryParams.put("access_token", accountStorage.getAccessToken(account));
 
       // make an API call to get profiles data and add the JSON to the model
-      String json = singlyService.doGetApiRequest(account, "/profiles",
+      String profilesJson = singlyService.doGetApiRequest(account, "/profiles",
         queryParams);
-      model.addAttribute("profilesJSON", json);
+
+      // parse the response, extract authenticated profiles
+      JsonNode root = JSONUtils.parse(profilesJson);
+      List<String> profileNames = JSONUtils.getFieldnames(root);
+      for (String profileName : profileNames) {
+        if (!profileName.equals("id")) {
+          model.addAttribute(profileName + "Authenticated", true);     
+        }
+      }
     }
 
-    return "/singly";
+    return "/index";
   }
 }

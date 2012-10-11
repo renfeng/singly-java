@@ -124,8 +124,10 @@ public class HttpClientServiceImpl
     String getURL = null;
     try {
       URIBuilder builder = new URIBuilder(url);
-      for (Map.Entry<String, String> param : params.entrySet()) {
-        builder.setParameter(param.getKey(), param.getValue());
+      if (params != null && !params.isEmpty()) {
+        for (Map.Entry<String, String> param : params.entrySet()) {
+          builder.setParameter(param.getKey(), param.getValue());
+        }
       }
       getURL = builder.toString();
     }
@@ -171,9 +173,11 @@ public class HttpClientServiceImpl
     HttpPost httppost = null;
 
     List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-    for (Map.Entry<String, String> param : params.entrySet()) {
-      nameValuePairs.add(new BasicNameValuePair(param.getKey(), param
-        .getValue()));
+    if (params != null && !params.isEmpty()) {
+      for (Map.Entry<String, String> param : params.entrySet()) {
+        nameValuePairs.add(new BasicNameValuePair(param.getKey(), param
+          .getValue()));
+      }
     }
 
     for (int i = 0; i < numRetries; i++) {

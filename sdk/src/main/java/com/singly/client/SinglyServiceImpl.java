@@ -7,7 +7,7 @@ import org.apache.http.HttpException;
 import org.codehaus.jackson.JsonNode;
 
 import com.singly.util.HttpClientService;
-import com.singly.util.JsonUtils;
+import com.singly.util.JSONUtils;
 import com.singly.util.SinglyUtils;
 
 /**
@@ -81,8 +81,8 @@ public class SinglyServiceImpl
       if (response != null) {
 
         // parse the json, get the access token
-        JsonNode root = JsonUtils.parseJson(new String(response));
-        String accessToken = JsonUtils.getStringValue(root, "access_token");
+        JsonNode root = JSONUtils.parse(new String(response));
+        String accessToken = JSONUtils.getString(root, "access_token");
 
         // save off the access token for the account to storage.
         accountStorage.saveAccessToken(account, accessToken);
