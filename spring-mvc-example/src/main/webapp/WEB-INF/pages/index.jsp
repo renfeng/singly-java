@@ -1,31 +1,22 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<!DOCTYPE html>
 <html>
-<head></head>
-<body>
-  <h2>Processing</h2>
-  <c:if test="${completedAuth}">You Just Completed An Authentication</c:if>
-  <p>${profilesJSON}</p>
-  
-  <h2>Services</h2>
-  <ol>
-    <li>
-      <a href="http://localhost:8080/index.html?service=facebook">Facebook</a>
-      <c:if test="${facebookAuthenticated}">&nbsp;<img src="/img/green_checkmark.jpg" /></c:if>
-    </li>
-    <li>
-      <a href="http://localhost:8080/index.html?service=github">Github</a>
-      <c:if test="${githubAuthenticated}">&nbsp;<img src="/img/green_checkmark.jpg" /></c:if>
-    </li>
-    <li>
-      <a href="http://localhost:8080/index.html?service=twitter">Twitter</a>
-      <c:if test="${twitterAuthenticated}">&nbsp;<img src="/img/green_checkmark.jpg" /></c:if>
-    </li>
-    <li>
-      <a href="http://localhost:8080/index.html?service=linkedin">LinkedIn</a>
-      <c:if test="${linkedinAuthenticated}">&nbsp;<img src="/img/green_checkmark.jpg" /></c:if>
-    </li>
-  </ol>
-</body>
+  <head>
+    <title>Singly Examples</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/example.css" />
+  </head>
+  <body>
+    <div id="content">
+      <div id="header"><a href="/index.html"><img id="logo" src="/img/singly-logo.png" /></a></div>
+      <h2>Examples</h2>
+      <p>Once authenticated, you can now call Singly APIs to get retrieve your
+      user's social data.</p>
+      <ol>
+        <li><a href="/authentication.html">Authenticate with different services</a></li>
+        <li><a href="/friends.html">Get friends from all services</a></li>
+        <li><a href="/photos.html">Get photos from services</a></li>
+      </ol>
+    </div>
+  </body>
 </html>
-  
