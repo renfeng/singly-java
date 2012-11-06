@@ -39,20 +39,20 @@ If you don't wish to use Maven for your application, you can use Ant/Ivy to buil
 
 The com.singly.client.SinglyServiceImpl is the main client class you will use within your application to authenticate and make API calls.  This is not a Java main class, simply the SDK entry point.  Please see the JavaDocs for that class for a complete description of authentication flow and API usage. Here is an example of how you would use the SinglyService.
 
-  import com.singly.client.InMemorySinglyAccountStorage;
-  import com.singly.util.HttpClientServiceImpl;
-  ...
-  HttpClientService httpClient = new HttpClientServiceImpl();
-  httpClient.initialize();
-  SinglyAccountStorage accountStorage = new InMemorySinglyAccountStorage();;
-  SinglyService client = new SinglyServiceImpl("yourClientId", "yourClientSecret", 
-    accountStorage, httpClient);
-  
-  Map<String, String> qparams = new LinkedHashMap<String, String>();
-  qparams.put("access_token", accountStorage.getAccessToken(account));
-  String servicesJson = singlyService.doGetApiRequest(account, "/services", qparams);
-  ... 
-  use the data in your app
+    import com.singly.client.InMemorySinglyAccountStorage;
+    import com.singly.util.HttpClientServiceImpl;
+    ...
+    HttpClientService httpClient = new HttpClientServiceImpl();
+    httpClient.initialize();
+    SinglyAccountStorage accountStorage = new InMemorySinglyAccountStorage();;
+    SinglyService client = new SinglyServiceImpl("yourClientId", "yourClientSecret", 
+      accountStorage, httpClient);
+    
+    Map<String, String> qparams = new LinkedHashMap<String, String>();
+    qparams.put("access_token", accountStorage.getAccessToken(account));
+    String servicesJson = singlyService.doGetApiRequest(account, "/services", qparams);
+    ... 
+    use the data in your app
 
 Usually a custom SinglyAccountStorage implementation would need to be created to save accounts and access tokens to a db or other permanent storage. 
 
