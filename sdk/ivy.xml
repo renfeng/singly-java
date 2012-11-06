@@ -1,0 +1,14 @@
+<ivy-module version="2.0">
+  <info organisation="com.singly" module="singly-sdk" />
+  <configurations>
+    <conf name="binaries" description="binary jars" />
+  </configurations>
+  <dependencies>
+    <dependency org="commons-lang" name="commons-lang" rev="2.6" conf="binaries->default" />
+    <dependency org="org.apache.httpcomponents" name="httpclient" rev="4.2.1" conf="binaries->default" />
+    <dependency org="org.apache.httpcomponents" name="httpmime" rev="4.2.1" conf="binaries->default" />
+    <dependency org="org.apache.httpcomponents" name="httpcore" rev="4.2.1" conf="binaries->default" />
+    <dependency org="org.codehaus.jackson" name="jackson-core-asl" rev="1.9.9" conf="binaries->default" />
+    <dependency org="org.codehaus.jackson" name="jackson-mapper-asl" rev="1.9.9" conf="binaries->default" />
+  </dependencies>
+</ivy-module>

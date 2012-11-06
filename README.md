@@ -35,9 +35,9 @@ The Singly Java SDK is under the sdk folder and is arranged as a Maven project. 
       <version>x.x.x</version>
     </dependency>
 
-If not using Maven for your application, you will still need to use Maven or Eclipse to build the SDK jar which can then be included into your project.
+If you don't wish to use Maven for your application, you can use Ant/Ivy to build the SinglySDK.jar and resolve dependencies.  In the root of the sdk directory there are build.xml and ivy.xml files. Run ant in the root of the sdk directory.  It will create a build directory, download all dependencies through Ivy, compile the sdk classes and create a SinglySDK.jar file in the jar directory.  All jars in the jar directory must then be included in your application.
 
-The com.singly.client.SinglyServiceImpl is the main client class you will use within your application to authenticate and make API calls.  Please see the JavaDocs for that class for a complete description of authentication flow and API usage.
+The com.singly.client.SinglyServiceImpl is the main client class you will use within your application to authenticate and make API calls.  This is not a Java main class, simply the SDK entry point.  Please see the JavaDocs for that class for a complete description of authentication flow and API usage.
 
 ## Android SDK
 

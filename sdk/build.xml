@@ -1,0 +1,38 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="SinglySDK" basedir="." default="main">
+    
+  <property name="src.dir" value="src/main/java" />
+  <property name="build.dir" value="build" />
+  <property name="classes.dir" value="${build.dir}/classes" />
+  <property name="jar.dir" value="${build.dir}/jar" />
+  <property name="libs.dir" value="${build.dir}/libs" />
+
+  <path id="compile.classpath">
+    <fileset dir="${jar.dir}">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+  
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+    <ivy:cleancache />    
+  </target>
+
+  <target name="compile">
+    <mkdir dir="${jar.dir}" />
+    <ivy:retrieve conf="binaries" pattern="${jar.dir}/[artifact](-[classifier])-[revision].[ext]" />
+    <mkdir dir="${classes.dir}"/>
+    <javac srcdir="${src.dir}" destdir="${classes.dir}">
+      <classpath refid="compile.classpath" />
+    </javac>
+  </target>  
+
+  <target name="build-jar" depends="compile">
+    <delete file="${jar.dir}/${ant.project.name}.jar" />
+    <jar destfile="${jar.dir}/${ant.project.name}.jar">
+      <fileset dir="${classes.dir}" includes="**/*.class" />
+    </jar>
+  </target>
+
+  <target name="main" depends="clean,build-jar" />
+
+</project>
