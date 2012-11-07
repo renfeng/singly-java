@@ -41,6 +41,7 @@ The com.singly.client.SinglyServiceImpl is the main client class you will use wi
 
     import com.singly.client.InMemorySinglyAccountStorage;
     import com.singly.util.HttpClientServiceImpl;
+    import com.singly.client.SinglyServiceImpl;
     ...
     HttpClientService httpClient = new HttpClientServiceImpl();
     httpClient.initialize();
