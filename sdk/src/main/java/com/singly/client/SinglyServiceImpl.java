@@ -3,11 +3,12 @@ package com.singly.client;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpException;
 import org.codehaus.jackson.JsonNode;
 
 import com.singly.util.HttpClientService;
-import com.singly.util.JSONUtils;
+import com.singly.util.JSON;
 import com.singly.util.SinglyUtils;
 
 /**
@@ -40,13 +41,21 @@ public class SinglyServiceImpl
   }
 
   @Override
-  public String getAuthenticationUrl(String service, String redirectUrl,
-    Map<String, String> authExtra) {
+  public String getAuthenticationUrl(String account, String service,
+    String redirectUrl, Map<String, String> authExtra) {
 
     Map<String, String> qparams = new LinkedHashMap<String, String>();
     qparams.put("client_id", clientId);
     qparams.put("redirect_uri", redirectUrl);
     qparams.put("service", service);
+    
+    // send access token if we have one
+    if (StringUtils.isNotBlank(account)) {
+      String accessToken = accountStorage.getAccessToken(account);
+      if (StringUtils.isNotBlank(accessToken)) {
+        qparams.put("access_token", accessToken);          
+      }    
+    }
 
     // add in scope and flag parameters if present
     if (authExtra != null) {
@@ -59,11 +68,11 @@ public class SinglyServiceImpl
     }
 
     // create the authentication url
-    return SinglyUtils.createSinglyURL("/oauth/authorize", qparams);
+    return SinglyUtils.createSinglyURL("/oauth/authenticate", qparams);
   }
 
   @Override
-  public boolean completeAuthentication(String account, String authCode) {
+  public String completeAuthentication(String authCode) {
 
     // create the post parameters
     Map<String, String> qparams = new LinkedHashMap<String, String>();
@@ -81,26 +90,26 @@ public class SinglyServiceImpl
       if (response != null) {
 
         // parse the json, get the access token
-        JsonNode root = JSONUtils.parse(new String(response));
-        String accessToken = JSONUtils.getString(root, "access_token");
+        JsonNode root = JSON.parse(new String(response));
+        String accessToken = JSON.getString(root, "access_token");
+        String singlyAccount = JSON.getString(root, "account");
 
         // save off the access token for the account to storage.
-        accountStorage.saveAccessToken(account, accessToken);
+        accountStorage.saveAccessToken(singlyAccount, accessToken);
 
         // completed the authentication successfully, move along
-        return true;
+        return singlyAccount;
       }
     }
     catch (HttpException e) {
       // do nothing falls through to false, didn't complete
     }
 
-    return false;
+    return null;
   }
 
   @Override
-  public String doGetApiRequest(String account, String apiEndpoint,
-    Map<String, String> queryParams)
+  public String doGetApiRequest(String apiEndpoint, Map<String, String> params)
     throws SinglyApiException {
 
     // create the API endpoint url
@@ -108,7 +117,7 @@ public class SinglyServiceImpl
 
     // create the API endpoint url
     try {
-      byte[] response = httpClientService.get(getApiCallUrl, queryParams);
+      byte[] response = httpClientService.get(getApiCallUrl, params);
       return new String(response);
     }
     catch (HttpException e) {
@@ -117,8 +126,7 @@ public class SinglyServiceImpl
   }
 
   @Override
-  public String doPostApiRequest(String account, String apiEndpoint,
-    Map<String, String> queryParams)
+  public String doPostApiRequest(String apiEndpoint, Map<String, String> params)
     throws SinglyApiException {
 
     // create the API endpoint url
@@ -126,7 +134,7 @@ public class SinglyServiceImpl
 
     // perform the API call and return the response
     try {
-      byte[] response = httpClientService.post(postApiCallUrl, queryParams);
+      byte[] response = httpClientService.post(postApiCallUrl, params);
       return new String(response);
     }
     catch (HttpException e) {
@@ -135,13 +143,12 @@ public class SinglyServiceImpl
   }
 
   @Override
-  public String doBodyApiRequest(String account, String apiEndpoint,
-    Map<String, String> queryParams, byte[] body, String mime, String charset)
+  public String doBodyApiRequest(String apiEndpoint,
+    Map<String, String> params, byte[] body, String mime, String charset)
     throws SinglyApiException {
 
     // create the API endpoint url
-    String postApiCallUrl = SinglyUtils.createSinglyURL(apiEndpoint,
-      queryParams);
+    String postApiCallUrl = SinglyUtils.createSinglyURL(apiEndpoint, params);
 
     // perform the API call and return the response
     try {

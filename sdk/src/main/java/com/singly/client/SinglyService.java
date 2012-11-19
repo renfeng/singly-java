@@ -33,7 +33,7 @@ public interface SinglyService {
    * Returns true if the application has been previously authenticated and 
    * has a Singly access token.
    * 
-   * @param account The account to check for authentication.
+   * @param account The Singly account to check for authentication.
    * 
    * @return True if the account has a Singly access token.  False otherwise.
    */
@@ -43,9 +43,20 @@ public interface SinglyService {
    * The first step of the authentication process, returns the URL to which the
    * user is to be redirected for authentication with a given service.
    * 
+   * The first time a user authenticates through Singly for a given application
+   * a unique Singly account token is generated and stored during the 
+   * {@link #completeAuthentication(String)} method.  As a user authenticates 
+   * with more services, those services are linked to the same Singly account.
+   * 
+   * If this is the first time your user is authenticating with Singly for your
+   * application you won't have an account, set it to null.  Otherwise pass in
+   * the Singly account token that was previously generated so the new services
+   * can be properly linked to the same account.
+   *  
    * Some services require extra parameters such as scope and flag to be passed
    * in.  Use the authExtra input to pass in the parameters by name.
    * 
+   * @param account The Singly account for which to authenticate.
    * @param service The service to authenticate against.
    * @param redirectUrl The URL handled by the application to which we are 
    * redirected upon successful authentication.
@@ -56,21 +67,23 @@ public interface SinglyService {
    * 
    * @return The URL to redirect the user to for service authentication.
    */
-  public String getAuthenticationUrl(String service, String redirectUrl,
-    Map<String, String> authExtra);
+  public String getAuthenticationUrl(String account, String service,
+    String redirectUrl, Map<String, String> authExtra);
 
   /**
    * Completes the authentication process, getting and storing the Singly access
-   * token for the account.
+   * token and account.
+   *
+   * The Singly account token is returned from this method and is also stored
+   * by the SinglyAccountStorage implementation.
    * 
-   * @param account The account for which to store the access token.
    * @param authCode The authentication code parsed from the redirect URL. This
    * is used to retrieve the Singly access token.
    * 
-   * @return True if the access token was retrieved and stored successfully,
-   * False otherwise.
+   * @return The Singly account or null if the authentication process did not
+   * complete successfully.
    */
-  public boolean completeAuthentication(String account, String authCode);
+  public String completeAuthentication(String authCode);
 
   /**
    * Makes a GET call to the Singly API.
@@ -78,17 +91,15 @@ public interface SinglyService {
    * If an API call requires an access token it must be added to the queryParams
    * passed into the method.
    * 
-   * @param account The account we are making the API call for.
    * @param apiEndpoint The Singly API endpoint to call.
-   * @param queryParams Any query parameters for the endpoint.
+   * @param params Any query parameters for the endpoint.
    * 
    * @return The JSON returned from the API.
    * 
    * @throws SinglyApiException A RuntimeException thrown if there was an error
    * calling the SinglyAPI.
    */
-  public String doGetApiRequest(String account, String apiEndpoint,
-    Map<String, String> queryParams)
+  public String doGetApiRequest(String apiEndpoint, Map<String, String> params)
     throws SinglyApiException;
 
   /**
@@ -97,17 +108,15 @@ public interface SinglyService {
    * If an API call requires an access token it must be added to the queryParams
    * passed into the method.
    * 
-   * @param account The account we are making the API call for.
    * @param apiEndpoint The Singly API endpoint to call.
-   * @param queryParams Any query parameters for the endpoint.
+   * @param params Any query parameters for the endpoint.
    * 
    * @return The JSON returned from the API.
    * 
    * @throws SinglyApiException A RuntimeException thrown if there was an error
    * calling the SinglyAPI.
    */
-  public String doPostApiRequest(String account, String apiEndpoint,
-    Map<String, String> queryParams)
+  public String doPostApiRequest(String apiEndpoint, Map<String, String> params)
     throws SinglyApiException;
 
   /**
@@ -117,9 +126,8 @@ public interface SinglyService {
    * If an API call requires an access token it must be added to the queryParams
    * passed into the method.
    * 
-   * @param account The account we are making the API call for.
    * @param apiEndpoint The Singly API endpoint to call.
-   * @param queryParams Any query parameters for the endpoint.  Query parameters
+   * @param params Any query parameters for the endpoint.  Query parameters
    * are appended to the URL and are not passed through the POST body.
    * @param body The body of the POST request.
    * @param mime The mime type set in the header of the POST request.
@@ -130,7 +138,7 @@ public interface SinglyService {
    * @throws SinglyApiException A RuntimeException thrown if there was an error
    * calling the SinglyAPI.
    */
-  public String doBodyApiRequest(String account, String apiEndpoint,
-    Map<String, String> queryParams, byte[] body, String mime, String charset)
+  public String doBodyApiRequest(String apiEndpoint,
+    Map<String, String> params, byte[] body, String mime, String charset)
     throws SinglyApiException;
 }

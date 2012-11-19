@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.singly.client.SinglyAccountStorage;
 import com.singly.client.SinglyService;
-import com.singly.util.JSONUtils;
+import com.singly.util.JSON;
 
 /**
  * Controller that demonstrates the Singly authentication process.
@@ -84,11 +85,10 @@ public class AuthenticationController {
     List<AuthService> curServices = new ArrayList<AuthService>();
 
     // make an API call to get profiles data and add the JSON to the model
-    String servicesJson = singlyService.doGetApiRequest(account, "/services",
-      null);
+    String servicesJson = singlyService.doGetApiRequest("/services", null);
 
-    JsonNode rootNode = JSONUtils.parse(servicesJson);
-    Map<String, JsonNode> serviceNodes = JSONUtils.getFields(rootNode);
+    JsonNode rootNode = JSON.parse(servicesJson);
+    Map<String, JsonNode> serviceNodes = JSON.getFields(rootNode);
 
     // loop through the service name to objects
     for (Map.Entry<String, JsonNode> entry : serviceNodes.entrySet()) {
@@ -97,16 +97,16 @@ public class AuthenticationController {
       JsonNode serviceNode = entry.getValue();
       AuthService authService = new AuthService();
       authService.id = entry.getKey();
-      authService.name = StringUtils.capitalize(JSONUtils.getString(
-        serviceNode, "name"));
+      authService.name = StringUtils.capitalize(JSON.getString(serviceNode,
+        "name"));
 
       // create a map of the icons and their sizes
       Map<String, String> icons = new HashMap<String, String>();
-      List<JsonNode> iconNodes = JSONUtils.getJsonNodes(serviceNode, "icons");
+      List<JsonNode> iconNodes = JSON.getJsonNodes(serviceNode, "icons");
       for (JsonNode iconNode : iconNodes) {
-        int height = JSONUtils.getInt(iconNode, "height");
-        int width = JSONUtils.getInt(iconNode, "width");
-        String source = JSONUtils.getString(iconNode, "source");
+        int height = JSON.getInt(iconNode, "height");
+        int width = JSON.getInt(iconNode, "width");
+        String source = JSON.getString(iconNode, "source");
         String key = height + "x" + width;
         icons.put(key, source);
       }
@@ -132,19 +132,18 @@ public class AuthenticationController {
     Map<String, String> profiles = new HashMap<String, String>();
 
     // query parameters for the api call, add in access token
-    Map<String, String> queryParams = new LinkedHashMap<String, String>();
-    queryParams.put("access_token", accountStorage.getAccessToken(account));
+    Map<String, String> qparams = new LinkedHashMap<String, String>();
+    qparams.put("access_token", accountStorage.getAccessToken(account));
 
     // make an API call to get profiles data and add the JSON to the model
-    String profilesJson = singlyService.doGetApiRequest(account, "/profiles",
-      queryParams);
+    String profilesJson = singlyService.doGetApiRequest("/profiles", qparams);
 
     // parse the response, extract authenticated profiles
-    JsonNode root = JSONUtils.parse(profilesJson);
-    List<String> profileNames = JSONUtils.getFieldnames(root);
+    JsonNode root = JSON.parse(profilesJson);
+    List<String> profileNames = JSON.getFieldnames(root);
     for (String profileName : profileNames) {
       if (!profileName.equals("id")) {
-        List<String> profileIds = JSONUtils.getStrings(root, profileName);
+        List<String> profileIds = JSON.getStrings(root, profileName);
         profiles.put(profileName, profileIds.get(0));
       }
     }
@@ -155,13 +154,13 @@ public class AuthenticationController {
   @RequestMapping(method = RequestMethod.GET)
   public String getView(Model model, @RequestParam(value = "code",
       required = false) String authCode, @RequestParam(value = "profile",
-      required = false) String profile, @RequestParam(
-      value = "service", required = false) String service,
-    HttpServletRequest request, HttpServletResponse response) {
+      required = false) String profile, @RequestParam(value = "service",
+      required = false) String service, HttpServletRequest request,
+    HttpServletResponse response) {
 
-    // using a singly test account, usually this is the user account of the
-    // web application, you need a way to distinguish access token per user
-    String account = "test_account";
+    // store the account in the session
+    HttpSession session = request.getSession();
+    String account = (String)session.getAttribute("account");
 
     // check if we are authenticating against a service, or completing an
     // authentication by handling the redirectURL
@@ -174,7 +173,7 @@ public class AuthenticationController {
         qparams.put("access_token", accountStorage.getAccessToken(account));
 
         // delete the profile service
-        singlyService.doPostApiRequest(account, "/profiles", qparams);
+        singlyService.doPostApiRequest("/profiles", qparams);
 
         // then redirect to authentication URL
         return "redirect:/authentication.html";
@@ -183,14 +182,15 @@ public class AuthenticationController {
 
         // if so then redirect to the service authentication URL
         return "redirect:"
-          + singlyService.getAuthenticationUrl(service,
+          + singlyService.getAuthenticationUrl(account, service,
             "http://localhost:8080/authentication.html", null);
       }
     }
     else if (StringUtils.isNotBlank(authCode)) {
 
       // parse the authentication code and pass to complete the authentication
-      singlyService.completeAuthentication(account, authCode);
+      account = singlyService.completeAuthentication(authCode);
+      session.setAttribute("account", account);
 
       // if so then redirect to authentication URL
       return "redirect:/authentication.html";
