@@ -23,7 +23,7 @@ import org.codehaus.jackson.node.TextNode;
 /**
  * Utility methods for parsing JSON strings and getting values.
  */
-public class JSONUtils {
+public class JSON {
 
   /**
    * Returns true if the string look like a valid JSON string, starting and

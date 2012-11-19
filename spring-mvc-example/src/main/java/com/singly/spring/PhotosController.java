@@ -7,7 +7,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.singly.client.SinglyAccountStorage;
 import com.singly.client.SinglyService;
-import com.singly.util.JSONUtils;
+import com.singly.util.JSON;
 
 @Controller
 @RequestMapping("/photos.html")
@@ -55,14 +57,13 @@ public class PhotosController {
   private int getPhotosCount(String account) {
 
     // query parameters for the api call, add in access token
-    Map<String, String> queryParams = new LinkedHashMap<String, String>();
-    queryParams.put("access_token", accountStorage.getAccessToken(account));
+    Map<String, String> qparams = new LinkedHashMap<String, String>();
+    qparams.put("access_token", accountStorage.getAccessToken(account));
 
     // make an API call to get types data
-    String typesJson = singlyService.doGetApiRequest(account, "/types",
-      queryParams);
-    JsonNode root = JSONUtils.parse(typesJson);
-    return JSONUtils.getInt(root, "photos");
+    String typesJson = singlyService.doGetApiRequest("/types", qparams);
+    JsonNode root = JSON.parse(typesJson);
+    return JSON.getInt(root, "photos");
   }
 
   private List<Photo> getPhotos(String account) {
@@ -75,19 +76,18 @@ public class PhotosController {
     qparams.put("limit", String.valueOf(numPhotos));
 
     // make an API call to get profiles data and add the JSON to the model
-    String photosJson = singlyService.doGetApiRequest(account, "/types/photos",
-      qparams);
+    String photosJson = singlyService.doGetApiRequest("/types/photos", qparams);
 
-    JsonNode root = JSONUtils.parse(photosJson);
+    JsonNode root = JSON.parse(photosJson);
 
     for (JsonNode node : root) {
 
-      JsonNode data = JSONUtils.getJsonNode(node, "data");
+      JsonNode data = JSON.getJsonNode(node, "data");
 
       // parse the photo and add it to the block
       Photo photo = new Photo();
-      photo.thumbnailUrl = JSONUtils.getString(data, "picture");
-      photo.imageUrl = JSONUtils.getString(data, "source");
+      photo.thumbnailUrl = JSON.getString(data, "picture");
+      photo.imageUrl = JSON.getString(data, "source");
 
       photos.add(photo);
     }
@@ -99,13 +99,12 @@ public class PhotosController {
   public String getView(Model model, HttpServletRequest request,
     HttpServletResponse response) {
 
-    // using a singly test account, usually this is the user account of the
-    // web application, you need a way to distinguish access token per user
-    String account = "test_account";
+    // store the account in the session
+    HttpSession session = request.getSession();
+    String account = (String)session.getAttribute("account");
 
-    // get if the user is previously authenticated
-    boolean authenticated = singlyService.isAuthenticated(account);
-    if (!authenticated) {
+    // redirect is not authenticated
+    if (StringUtils.isBlank(account) || !singlyService.isAuthenticated(account)) {
       return "redirect:/authentication.html";
     }
 
