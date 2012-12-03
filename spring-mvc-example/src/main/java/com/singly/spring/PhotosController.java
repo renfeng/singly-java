@@ -74,8 +74,6 @@ public class PhotosController {
     Map<String, String> qparams = new LinkedHashMap<String, String>();
     qparams.put("access_token", accountStorage.getAccessToken(account));
     qparams.put("limit", String.valueOf(numPhotos));
-
-    // make an API call to get profiles data and add the JSON to the model
     String photosJson = singlyService.doGetApiRequest("/types/photos", qparams);
 
     JsonNode root = JSON.parse(photosJson);

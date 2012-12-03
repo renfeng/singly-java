@@ -48,13 +48,13 @@ public class SinglyServiceImpl
     qparams.put("client_id", clientId);
     qparams.put("redirect_uri", redirectUrl);
     qparams.put("service", service);
-    
+
     // send access token if we have one
     if (StringUtils.isNotBlank(account)) {
       String accessToken = accountStorage.getAccessToken(account);
       if (StringUtils.isNotBlank(accessToken)) {
-        qparams.put("access_token", accessToken);          
-      }    
+        qparams.put("access_token", accessToken);
+      }
     }
 
     // add in scope and flag parameters if present
@@ -126,15 +126,17 @@ public class SinglyServiceImpl
   }
 
   @Override
-  public String doPostApiRequest(String apiEndpoint, Map<String, String> params)
-    throws SinglyApiException {
+  public String doPostApiRequest(String apiEndpoint,
+    Map<String, String> queryParams, Map<String, String> postParams) {
 
     // create the API endpoint url
-    String postApiCallUrl = SinglyUtils.createSinglyURL(apiEndpoint);
+    String postApiCallUrl = queryParams != null && !queryParams.isEmpty()
+      ? SinglyUtils.createSinglyURL(apiEndpoint, queryParams) : SinglyUtils
+        .createSinglyURL(apiEndpoint);
 
     // perform the API call and return the response
     try {
-      byte[] response = httpClientService.post(postApiCallUrl, params);
+      byte[] response = httpClientService.post(postApiCallUrl, postParams);
       return new String(response);
     }
     catch (HttpException e) {
@@ -143,7 +145,28 @@ public class SinglyServiceImpl
   }
 
   @Override
-  public String doBodyApiRequest(String apiEndpoint,
+  public String doPostMultipartApiRequest(String apiEndpoint,
+    Map<String, String> queryParams, Map<String, String> postParams,
+    Map<String, Object> files, Map<String, String> filenames) {
+
+    // create the API endpoint url
+    String postApiCallUrl = queryParams != null && !queryParams.isEmpty()
+      ? SinglyUtils.createSinglyURL(apiEndpoint, queryParams) : SinglyUtils
+        .createSinglyURL(apiEndpoint);
+
+    // perform the API call and return the response
+    try {
+      byte[] response = httpClientService.postMultipart(postApiCallUrl,
+        postParams, files, filenames);
+      return new String(response);
+    }
+    catch (HttpException e) {
+      throw new SinglyApiException(e);
+    }
+  }
+
+  @Override
+  public String doPostBodyApiRequest(String apiEndpoint,
     Map<String, String> params, byte[] body, String mime, String charset)
     throws SinglyApiException {
 

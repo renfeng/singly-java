@@ -105,19 +105,45 @@ public interface SinglyService {
   /**
    * Makes a POST call to the Singly API.
    * 
-   * If an API call requires an access token it must be added to the queryParams
-   * passed into the method.
+   * If an API call requires an access token it must be added to either the 
+   * queryParams or postParams passed into the method.
    * 
    * @param apiEndpoint The Singly API endpoint to call.
-   * @param params Any query parameters for the endpoint.
+   * @param queryParams Any parameters to send in the url of the request.
+   * @param postParams Any parameters to send in the post body of the request.
    * 
    * @return The JSON returned from the API.
    * 
    * @throws SinglyApiException A RuntimeException thrown if there was an error
    * calling the SinglyAPI.
    */
-  public String doPostApiRequest(String apiEndpoint, Map<String, String> params)
-    throws SinglyApiException;
+  public String doPostApiRequest(String apiEndpoint,
+    Map<String, String> queryParams, Map<String, String> postParams);
+  
+  /**
+   * Makes a POST call to the Singly API.
+   * 
+   * If an API call requires an access token it must be added to either the 
+   * queryParams or postParams passed into the method.
+   * 
+   * Binary content can be posted as a multipart form by adding InputStream, 
+   * byte[], or File objects to the files map.  If you would like to specify a
+   * filename for the binary content, the filename must be added to the 
+   * filenames mapping with the same key as the files mapping.
+   * 
+   * @param apiEndpoint The Singly API endpoint to call.
+   * @param queryParams Any parameters to send in the url of the request.
+   * @param postParams Any parameters to send in the post body of the request.
+   * @param files Any binary content to send in the post body of the request.
+   * 
+   * @return The JSON returned from the API.
+   * 
+   * @throws SinglyApiException A RuntimeException thrown if there was an error
+   * calling the SinglyAPI.
+   */
+  public String doPostMultipartApiRequest(String apiEndpoint,
+    Map<String, String> queryParams, Map<String, String> postParams,
+    Map<String, Object> files, Map<String, String> filenames);
 
   /**
    * Makes a POST call to the Singly API passing in the body of the request. 
@@ -138,7 +164,7 @@ public interface SinglyService {
    * @throws SinglyApiException A RuntimeException thrown if there was an error
    * calling the SinglyAPI.
    */
-  public String doBodyApiRequest(String apiEndpoint,
+  public String doPostBodyApiRequest(String apiEndpoint,
     Map<String, String> params, byte[] body, String mime, String charset)
     throws SinglyApiException;
 }

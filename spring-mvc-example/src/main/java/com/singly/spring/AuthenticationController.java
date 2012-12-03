@@ -168,12 +168,12 @@ public class AuthenticationController {
 
       if (StringUtils.isNotBlank(profile)) {
 
-        Map<String, String> qparams = new HashMap<String, String>();
-        qparams.put("delete", profile + "@" + service);
-        qparams.put("access_token", accountStorage.getAccessToken(account));
+        Map<String, String> postParams = new HashMap<String, String>();
+        postParams.put("delete", profile + "@" + service);
+        postParams.put("access_token", accountStorage.getAccessToken(account));
 
         // delete the profile service
-        singlyService.doPostApiRequest("/profiles", qparams);
+        singlyService.doPostApiRequest("/profiles", null, postParams);
 
         // then redirect to authentication URL
         return "redirect:/authentication.html";

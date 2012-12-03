@@ -16,6 +16,7 @@
         <li><a href="/authentication.html">Authenticate with different services</a></li>
         <li><a href="/friends.html">Get friends from all services</a></li>
         <li><a href="/photos.html">Get photos from services</a></li>
+        <li><a href="/postphoto.html">Post a photo to Facebook</a></li>
       </ol>
     </div>
   </body>

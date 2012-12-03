@@ -1,11 +1,17 @@
 package com.singly.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
@@ -22,6 +28,12 @@ import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.mime.FormBodyPart;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.InputStreamBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
@@ -166,15 +178,15 @@ public class HttpClientServiceImpl
     throw new HttpException("GET error: " + getURL + ", attempts:" + numRetries);
   }
 
-  public byte[] post(String url, Map<String, String> params)
+  public byte[] post(String url, Map<String, String> postParams)
     throws HttpException {
 
     int numRetries = retry ? maxRetries : 1;
     HttpPost httppost = null;
 
     List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-    if (params != null && !params.isEmpty()) {
-      for (Map.Entry<String, String> param : params.entrySet()) {
+    if (postParams != null && !postParams.isEmpty()) {
+      for (Map.Entry<String, String> param : postParams.entrySet()) {
         nameValuePairs.add(new BasicNameValuePair(param.getKey(), param
           .getValue()));
       }
@@ -186,6 +198,90 @@ public class HttpClientServiceImpl
 
         httppost = new HttpPost(url);
         httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+        HttpResponse response = httpClient.execute(httppost);
+        StatusLine status = response.getStatusLine();
+        int statusCode = status.getStatusCode();
+        if (statusCode >= 300) {
+          throw new HttpException(status.getReasonPhrase());
+        }
+
+        HttpEntity entity = response.getEntity();
+        if (entity != null) {
+          return EntityUtils.toByteArray(entity);
+        }
+        return null;
+      }
+      catch (HttpException he) {
+        httppost.abort();
+        throw he;
+      }
+      catch (Exception e) {
+        httppost.abort();
+      }
+    }
+
+    // tried max times and errored, throw exception
+    throw new HttpException("POST error: " + url + ", attempts:" + numRetries);
+  }
+
+  public byte[] postMultipart(String url, Map<String, String> postParams,
+    Map<String, Object> files, Map<String, String> filenames)
+    throws HttpException {
+
+    int numRetries = retry ? maxRetries : 1;
+    HttpPost httppost = null;
+    MultipartEntity multipart = new MultipartEntity();
+
+    if (postParams != null && !postParams.isEmpty()) {
+
+      for (Map.Entry<String, String> postParam : postParams.entrySet()) {
+        try {
+          String key = postParam.getKey();
+          String val = postParam.getValue();
+          FormBodyPart formPart = new FormBodyPart(key, new StringBody(val));
+          multipart.addPart(formPart);
+        }
+        catch (UnsupportedEncodingException e) {
+          // continue
+        }
+      }
+    }
+
+    if (files != null && !files.isEmpty()) {
+
+      int fileIndex = 0;
+      for (Map.Entry<String, Object> file : files.entrySet()) {
+
+        String key = file.getKey();
+        Object val = file.getValue();
+        String filename = filenames != null ? filenames.get(key) : null;
+        if (StringUtils.isBlank(filename)) {
+          filename = "file" + fileIndex++;
+        }
+
+        if (val instanceof InputStream) {
+          InputStreamBody isBody = new InputStreamBody((InputStream)val,
+            filename);
+          multipart.addPart(key, isBody);
+        }
+        else if (val instanceof byte[]) {
+          ByteArrayBody byteBody = new ByteArrayBody((byte[])val, filename);
+          multipart.addPart(key, byteBody);
+        }
+        else if (val instanceof File) {
+          FileBody fileBody = new FileBody((File)val, filename);
+          multipart.addPart(key, fileBody);
+        }
+      }
+    }
+
+    for (int i = 0; i < numRetries; i++) {
+
+      try {
+
+        httppost = new HttpPost(url);
+        httppost.setEntity(multipart);
+
         HttpResponse response = httpClient.execute(httppost);
         StatusLine status = response.getStatusLine();
         int statusCode = status.getStatusCode();
