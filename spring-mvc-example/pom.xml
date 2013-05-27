@@ -372,4 +372,22 @@
 		<connection>scm:git:${scmUrl}</connection>
 	</scm>
 
+	<profiles>
+		<profile>
+			<id>test</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<maven.buildNumber.doCheck>false</maven.buildNumber.doCheck>
+			</properties>
+		</profile>
+		<profile>
+			<id>beta</id>
+			<properties>
+				<maven.buildNumber.doCheck>true</maven.buildNumber.doCheck>
+			</properties>
+		</profile>
+	</profiles>
+
 </project>
