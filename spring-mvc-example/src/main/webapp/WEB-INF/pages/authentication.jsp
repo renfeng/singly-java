@@ -4,13 +4,13 @@
 <html>
   <head>
     <title>Singly Example Authentication</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/example.css" />
+    <link rel="stylesheet" type="text/css" href="static/css/example.css" />
   </head>
   <body>
     <div id="content">
-      <div id="header"><a href="/index.html"><img id="logo" src="/img/singly-logo.png" /></a></div>
+      <div id="header"><a href="index.html"><img id="logo" src="img/singly-logo.png" /></a></div>
       <h2>Step 1: Authenticate with a Service</h2>
-      <div><a href="/index.html">Back To Index</a></div>      
+      <div><a href="index.html">Back To Index</a></div>      
       <p>A user of your application first authenticates with a service such as
       Facebook, Twitter, or LinkedIn.  This gives you a Singly access token on
       on a per user basis.  The user can authenticate with multiple services 
@@ -27,13 +27,13 @@
           <td <c:if test="${profile != null}">class="hasProfile"</c:if>>
             <div class="serviceCell">
               <c:if test="${profile != null}">
-                <a href="/authentication.html?service=${service.id}&profile=${profile}">
+                <a href="authentication.html?service=${service.id}&profile=${profile}">
                   <div class="minus">
-                    <img src="/img/minus.png" alt="Remove authentication for this service" />
+                    <img src="img/minus.png" alt="Remove authentication for this service" />
                   </div>
                 </a>
               </c:if>
-              <a href="/authentication.html?service=${service.id}">
+              <a href="authentication.html?service=${service.id}">
                 <img src="${service.icons['32x32']}" />
                 <br>
                 ${service.name}

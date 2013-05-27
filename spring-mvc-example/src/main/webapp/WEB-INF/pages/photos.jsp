@@ -8,9 +8,9 @@
   </head>
   <body>
     <div id="content">
-      <div id="header"><a href="/index.html"><img id="logo" src="/img/singly-logo.png" /></a></div>
+      <div id="header"><a href="index.html"><img id="logo" src="img/singly-logo.png" /></a></div>
       <h2>All Photos from All Services</h2> 
-      <div><a href="/index.html">Back To Index</a></div>      
+      <div><a href="index.html">Back To Index</a></div>      
       <p>This example uses the /photos API to get all photos from all services.</p>      
       <table id="friends">
         <tr>      

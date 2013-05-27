@@ -17,6 +17,7 @@
     <org.springframework.version>3.1.1.RELEASE</org.springframework.version>  
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <cglib.version>2.2.2</cglib.version>
+    <scmUrl>https://github.com/renfeng/singly-java/commit/</scmUrl>
   </properties>
 
   <dependencies>
@@ -30,11 +31,11 @@
     </dependency>
 
     <!-- Logging through slf4j and logback -->
-    <dependency>
+    <!-- <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>${slf4j.version}</version>
-    </dependency>
+    </dependency> -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
@@ -45,11 +46,11 @@
       <artifactId>logback-classic</artifactId>
       <version>${logback.version}</version>
     </dependency>
-    <dependency>
+    <!-- <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
       <version>${logback.version}</version>
-    </dependency>
+    </dependency> -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-access</artifactId>
@@ -62,51 +63,51 @@
     </dependency>
 
     <!--  Spring Framework -->    
-    <dependency>
+    <!-- <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
       <version>${org.springframework.version}</version>
-    </dependency>    
-    <dependency>
+    </dependency> -->    
+    <!-- <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-expression</artifactId>
       <version>${org.springframework.version}</version>
-    </dependency>
-    <dependency>
+    </dependency> -->
+    <!-- <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
       <version>${org.springframework.version}</version>
-    </dependency>   
-    <dependency>
+    </dependency> -->   
+    <!-- <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-aop</artifactId>
       <version>${org.springframework.version}</version>
-    </dependency> 
-    <dependency>
+    </dependency> --> 
+    <!-- <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
       <version>${org.springframework.version}</version>
-    </dependency> 
-    <dependency>
+    </dependency> --> 
+    <!-- <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context-support</artifactId>
       <version>${org.springframework.version}</version>
-    </dependency>       
-    <dependency>
+    </dependency> -->       
+    <!-- <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-tx</artifactId>
       <version>${org.springframework.version}</version>
-    </dependency>   
+    </dependency> -->   
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
       <version>${org.springframework.version}</version>
     </dependency>                  
-    <dependency>
+    <!-- <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
       <version>${org.springframework.version}</version>
-    </dependency>    
+    </dependency> -->    
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
@@ -127,11 +128,11 @@
     </dependency>  
 
     <!-- Hibernate Validator and JSR-303 -->
-    <dependency>
+    <!-- <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
       <version>1.0.0.GA</version>
-    </dependency>    
+    </dependency> -->    
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
@@ -173,11 +174,11 @@
       <artifactId>commons-dbcp</artifactId>
       <version>1.4</version>
     </dependency>
-    <dependency>
+    <!-- <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
       <version>1.6</version>
-    </dependency>
+    </dependency> -->
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
@@ -204,19 +205,19 @@
       <version>4.2.1</version>
       <scope>compile</scope>
     </dependency>    
-    <dependency>
+    <!-- <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
       <version>4.2.1</version>
-    </dependency> 
+    </dependency> --> 
         
             
     <!-- Jackson JSON parser -->
-    <dependency>
+    <!-- <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-core-asl</artifactId>
       <version>1.9.7</version>
-    </dependency>
+    </dependency> -->
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>
@@ -240,7 +241,7 @@
   </dependencies>
 
   <build>
-    <finalName>${project.artifactId}-${project.version}</finalName>
+    <finalName>singly</finalName>
     <resources>
       <resource>
         <directory>${project.build.sourceDirectory}</directory>
@@ -286,7 +287,89 @@
           </scanTargetPatterns>
         </configuration>        
       </plugin>    
-    </plugins>      
+
+			<!-- phase: prepare-package -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.2</version>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+
+					<!-- <format>{0}</format> <items> <item></item> </items> -->
+
+					<!-- <doUpdate>true</doUpdate> -->
+
+					<scmDirectory>..</scmDirectory>
+					<!-- <doCheck>true</doCheck> -->
+
+					<shortRevisionLength>7</shortRevisionLength>
+
+				</configuration>
+			</plugin>
+
+			<!-- phase: package -->
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
+						<manifestEntries>
+							<Implementation-Build>${scmUrl}/commit/${buildNumber}</Implementation-Build>
+						</manifestEntries>
+					</archive>
+					<webResources>
+						<resource>
+							<directory>src/main/webapp</directory>
+							<filtering>true</filtering>
+							<includes>
+								<include>WEB-INF/web.xml</include>
+							</includes>
+						</resource>
+					</webResources>
+				</configuration>
+			</plugin>
+
+			<!-- phase: invoked manually -->
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat6-maven-plugin</artifactId>
+				<version>2.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>run-war-only</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+
+					<!-- <port>8080</port> -->
+					<!-- <ajpPort>9005</ajpPort> -->
+					<!-- <httpsPort>8443</httpsPort> -->
+
+					<!-- https://issues.apache.org/jira/browse/MTOMCAT-175 -->
+					<warDirectory>${project.build.directory}/${project.build.finalName}</warDirectory>
+
+				</configuration>
+			</plugin>
+
+    </plugins>
+    <defaultGoal>tomcat6:run-war-only</defaultGoal>      
   </build>  
-      
+
+	<scm>
+		<connection>scm:git:${scmUrl}</connection>
+	</scm>
+
 </project>

@@ -183,7 +183,9 @@ public class AuthenticationController {
         // if so then redirect to the service authentication URL
         return "redirect:"
           + singlyService.getAuthenticationUrl(account, service,
-            "http://localhost:8080/authentication.html", null);
+        		  request.getRequestURL().substring(0,
+        				  request.getRequestURL().indexOf(request.getContextPath()))
+      					+ request.getContextPath() + "/authentication.html", null);
       }
     }
     else if (StringUtils.isNotBlank(authCode)) {
