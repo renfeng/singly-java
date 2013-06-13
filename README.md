@@ -92,7 +92,4 @@ https://github.com/Singly/singly-android
 Support
 --------------
 
-This is a work in progress. If you have questions or comments
-
-* Join our live chatroom at http://support.singly.com
-* Email support@singly.com
+This is a work in progress. If you have questions or comments feel free to [contact support](https://singly.com/docs/contact).
