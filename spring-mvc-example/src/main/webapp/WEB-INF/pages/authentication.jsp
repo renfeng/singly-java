@@ -18,7 +18,7 @@
       <c:if test="${authenticated}">
         <h2>Step 2: Authenticated! Your account is: ${account}</h2>
         <p>Now that the user has authenticated you can call Singly APIs or proxy 
-        through to the service APIs. <a href="/index.html">Go To Examples</a></p>
+        through to the service APIs. <a href="index.html">Go To Examples</a></p>
       </c:if>      
       <table id="serviceList">
         <tr>

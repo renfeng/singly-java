@@ -79,7 +79,7 @@ public class AuthenticationController {
 
   }
 
-  private List<AuthService> getAuthServices(String account) {
+  private List<AuthService> getAuthServices() {
 
     // new list of services
     List<AuthService> curServices = new ArrayList<AuthService>();
@@ -199,7 +199,7 @@ public class AuthenticationController {
     }
 
     // get authentication services through singly api
-    List<AuthService> authServices = getAuthServices(account);
+    List<AuthService> authServices = getAuthServices();
     model.addAttribute("services", authServices);
 
     // get if the user is previously authenticated
